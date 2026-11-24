@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>悉尼海港大桥 · 1923—1932</title>
+<style>
+  :root {
+    --ink: #070c12;
+    --panel: rgba(9, 15, 22, 0.68);
+    --panel-line: rgba(233, 196, 138, 0.22);
+    --paper: #f3e9d7;
+    --muted: #b7ab98;
+    --gold: #e9c48a;
+    --gold-deep: #c99753;
+    --accent: #ffb35c;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  #app, #app canvas { position: fixed; inset: 0; display: block; }
+  #app canvas { cursor: grab; }
+  #app canvas:active { cursor: grabbing; }
+
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(120% 90% at 50% 45%, transparent 45%, rgba(3, 7, 11, 0.55) 100%),
+      linear-gradient(to bottom, rgba(4, 8, 12, 0.45), transparent 18%, transparent 82%, rgba(4, 8, 12, 0.5));
+    z-index: 2;
+  }
+
+  .masthead {
+    position: fixed;
+    top: 30px;
+    left: 34px;
+    z-index: 5;
+    max-width: 360px;
+    pointer-events: none;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
+  }
+  .masthead__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 10px;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 14px;
+  }
+  .masthead__eyebrow::before {
+    content: "";
+    width: 26px;
+    height: 1px;
+    background: var(--gold);
+    opacity: 0.7;
+  }
+  .masthead h1 {
+    margin: 0;
+    font-family: "Songti SC", "STSong", "Noto Serif SC", Georgia, serif;
+    font-weight: 600;
+    font-size: clamp(30px, 3.4vw, 46px);
+    line-height: 1.08;
+    letter-spacing: 0.02em;
+  }
+  .masthead h1 em {
+    display: block;
+    font-style: normal;
+    font-size: 0.42em;
+    letter-spacing: 0.18em;
+    color: var(--muted);
+    margin-top: 10px;
+    font-family: "PingFang SC", system-ui, sans-serif;
+    font-weight: 400;
+  }
+
+  .story {
+    position: fixed;
+    top: 150px;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    display: grid;
+    grid-template-columns: minmax(200px, 0.85fr) minmax(0, 1.5fr) minmax(360px, 1.3fr);
+    align-items: center;
+    gap: 28px;
+    padding: 15px max(34px, calc((100% - 1372px) / 2)) 14px;
+    background: linear-gradient(180deg, rgba(9, 15, 22, 0.84), rgba(9, 15, 22, 0.62));
+    border-top: 1px solid var(--panel-line);
+    border-bottom: 1px solid var(--panel-line);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
+  }
+  .story__head { min-width: 0; }
+  .story__index {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+  .story__index .rule { flex: 1; height: 1px; background: var(--panel-line); }
+  .story h2 {
+    margin: 8px 0 0;
+    font-family: "Songti SC", "STSong", "Noto Serif SC", Georgia, serif;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    line-height: 1.25;
+  }
+  .story p {
+    margin: 0;
+    max-width: 720px;
+    font-size: 12px;
+    line-height: 1.72;
+    color: var(--muted);
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px;
+    margin-top: 0;
+    background: rgba(233, 196, 138, 0.14);
+    border: 1px solid rgba(233, 196, 138, 0.14);
+  }
+  .stat {
+    background: rgba(7, 12, 18, 0.72);
+    padding: 8px 8px 7px;
+    min-width: 0;
+  }
+  .stat__value {
+    display: block;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 16px;
+    letter-spacing: 0.01em;
+    color: var(--paper);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .stat__label {
+    display: block;
+    margin-top: 3px;
+    font-size: 8.5px;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  .views {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    z-index: 6;
+    display: flex;
+    gap: 8px;
+  }
+  .views button {
+    appearance: none;
+    border: 1px solid var(--panel-line);
+    background: var(--panel);
+    color: var(--paper);
+    font: inherit;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    padding: 8px 13px;
+    border-radius: 2px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+  .views button:hover { border-color: var(--gold); color: var(--gold); }
+  .views button.is-active { background: rgba(233, 196, 138, 0.16); border-color: var(--gold); color: var(--gold); }
+  .views button#replayBtn { color: var(--muted); }
+  .views button#replayBtn:hover { color: var(--gold); }
+
+  .controls {
+    position: fixed;
+    z-index: 6;
+    left: 50%;
+    bottom: 26px;
+    transform: translateX(-50%);
+    width: min(760px, calc(100vw - 56px));
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 14px 20px 12px;
+    background: var(--panel);
+    border: 1px solid var(--panel-line);
+    border-radius: 3px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.4);
+  }
+  .play {
+    flex: 0 0 auto;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 1px solid var(--gold);
+    background: rgba(233, 196, 138, 0.1);
+    color: var(--gold);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .play:hover { background: rgba(233, 196, 138, 0.22); transform: scale(1.04); }
+  .play svg { width: 16px; height: 16px; fill: currentColor; }
+  .timeline { flex: 1; min-width: 0; }
+  .timeline__meta {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 7px;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: var(--muted);
+  }
+  .timeline__meta #yearLabel {
+    font-family: Georgia, serif;
+    font-size: 17px;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    font-variant-numeric: tabular-nums;
+  }
+  .timeline__meta #phaseLabel { flex: 1; color: var(--paper); opacity: 0.82; }
+  .timeline__meta #percentLabel { font-variant-numeric: tabular-nums; }
+  #timeline {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 22px;
+    background: transparent;
+    cursor: pointer;
+    display: block;
+  }
+  #timeline::-webkit-slider-runnable-track {
+    height: 2px;
+    background: linear-gradient(to right, var(--gold) 0%, var(--gold) var(--fill, 0%), rgba(243, 233, 215, 0.2) var(--fill, 0%), rgba(243, 233, 215, 0.2) 100%);
+  }
+  #timeline::-moz-range-track { height: 2px; background: rgba(243, 233, 215, 0.2); }
+  #timeline::-moz-range-progress { height: 2px; background: var(--gold); }
+  #timeline::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 11px;
+    height: 11px;
+    margin-top: -4.5px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 0 4px rgba(233, 196, 138, 0.14), 0 0 18px rgba(255, 179, 92, 0.55);
+  }
+  #timeline::-moz-range-thumb {
+    width: 11px;
+    height: 11px;
+    border: none;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 0 4px rgba(233, 196, 138, 0.14), 0 0 18px rgba(255, 179, 92, 0.55);
+  }
+
+  .hint {
+    position: fixed;
+    left: 34px;
+    bottom: 30px;
+    z-index: 5;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: rgba(243, 233, 215, 0.5);
+    pointer-events: none;
+  }
+
+  #loader {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(70% 60% at 50% 45%, #101c28, #05090e 75%);
+    transition: opacity 0.9s ease, visibility 0.9s;
+  }
+  #loader.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+  .loader__inner { text-align: center; }
+  .loader__inner span {
+    display: block;
+    font-family: "Songti SC", "STSong", Georgia, serif;
+    font-size: clamp(22px, 3vw, 34px);
+    letter-spacing: 0.16em;
+    color: var(--paper);
+  }
+  .loader__inner em {
+    display: block;
+    margin-top: 12px;
+    font-style: normal;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: var(--gold);
+    opacity: 0.75;
+    animation: breathe 1.8s ease-in-out infinite;
+  }
+  @keyframes breathe { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.9; } }
+
+  @media (max-width: 900px) {
+    .masthead { top: 18px; left: 18px; }
+    .masthead h1 { font-size: 26px; }
+    .masthead h1 em { font-size: 10px; margin-top: 6px; }
+    .masthead__eyebrow { margin-bottom: 8px; font-size: 8px; }
+    .views { top: auto; bottom: 154px; right: 18px; left: 18px; justify-content: center; flex-wrap: wrap; }
+    .views button { padding: 7px 10px; font-size: 10px; }
+    .story {
+      top: 96px;
+      left: 18px;
+      right: 18px;
+      width: auto;
+      display: block;
+      padding: 14px 16px 12px;
+      background: var(--panel);
+      border: 1px solid var(--panel-line);
+      border-radius: 3px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+    }
+    .story h2 { font-size: 19px; margin: 8px 0 6px; }
+    .story p { max-width: none; font-size: 11px; line-height: 1.65; }
+    .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 10px; }
+    .stat { padding: 7px 6px; min-width: 0; }
+    .stat__value { font-size: 12px; letter-spacing: 0; white-space: nowrap; }
+    .stat__label { font-size: 7.5px; letter-spacing: 0.04em; }
+    .controls { bottom: 14px; width: calc(100vw - 28px); padding: 10px 14px; gap: 12px; }
+    .play { width: 40px; height: 40px; }
+    .hint { display: none; }
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<header class="masthead">
+  <div class="masthead__eyebrow">Sydney Harbour Bridge · 1923—1932</div>
+  <h1>跨越海港<em>一座钢拱如何在九年间合龙</em></h1>
+</header>
+
+<nav class="views" aria-label="视角切换">
+  <button data-view="overview" class="is-active">全景</button>
+  <button data-view="arch">拱顶</button>
+  <button data-view="deck">桥面</button>
+  <button id="replayBtn">重播</button>
+</nav>
+
+<aside class="story" id="story">
+  <div class="story__head">
+    <div class="story__index">
+      <span id="chapterIndex">01</span>
+      <span class="rule"></span>
+      <span id="chapterPhase">勘测与基础</span>
+    </div>
+    <h2 id="chapterTitle">在海湾上放线</h2>
+  </div>
+  <p id="chapterText">1923 年，工人在两岸开挖砂岩、浇筑桥台，并把钢缆的锚固隧道深深打进岩体。没有计算机与重型吊船，一切靠测量、绞车和人力。</p>
+  <div class="stats">
+    <div class="stat"><span class="stat__value" id="statRivets">0</span><span class="stat__label">铆钉</span></div>
+    <div class="stat"><span class="stat__value" id="statSteel">0 t</span><span class="stat__label">钢构件</span></div>
+    <div class="stat"><span class="stat__value" id="statWorkers">1,400</span><span class="stat__label">工人</span></div>
+    <div class="stat"><span class="stat__value">503 m</span><span class="stat__label">主跨</span></div>
+  </div>
+</aside>
+
+<div class="controls">
+  <button class="play" id="playBtn" aria-label="播放或暂停">
+    <svg id="iconPause" viewBox="0 0 16 16"><rect x="3" y="2" width="3.4" height="12"></rect><rect x="9.6" y="2" width="3.4" height="12"></rect></svg>
+    <svg id="iconPlay" viewBox="0 0 16 16" style="display:none"><path d="M4 2.2 13.4 8 4 13.8Z"></path></svg>
+  </button>
+  <div class="timeline">
+    <div class="timeline__meta">
+      <span id="yearLabel">1923</span>
+      <span id="phaseLabel">勘测与基础</span>
+      <span id="percentLabel">0%</span>
+    </div>
+    <input id="timeline" type="range" min="0" max="1000" value="0" step="1" aria-label="建造时间轴">
+  </div>
+</div>
+
+<div class="hint">拖动旋转 · 滚轮缩放 · 空格播放/暂停</div>
+
+<div id="loader">
+  <div class="loader__inner">
+    <span>悉尼海港大桥</span>
+    <em>正在搭建 1923 年的悉尼湾…</em>
+  </div>
+</div>
+
+<script src="vendor/three.min.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/bridge.js"></script>
+<script src="js/environment.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
